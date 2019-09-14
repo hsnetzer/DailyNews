@@ -21,6 +21,7 @@ import RealmSwift
     dynamic var createdDate = Date()
     dynamic var publishedDate = Date()
     dynamic var firstPublishedDate = Date()
+    dynamic var dayOfTheWeek = -1
     dynamic var materialTypeFacet = ""
     dynamic var kicker = ""
     dynamic var subheadline = ""
@@ -36,16 +37,20 @@ import RealmSwift
         case materialTypeFacet = "material_type_facet"
         case kicker, subheadline
     }
+
+    override static func indexedProperties() -> [String] {
+        return ["section"]
+    }
 }
 
 struct ArticlesResult: Decodable {
     let status, copyright: String
     let numResults: Int
-    let results: [Article]
+    let articles: [Article]
 
     enum CodingKeys: String, CodingKey {
         case status, copyright
         case numResults = "num_results"
-        case results
+        case articles = "results"
     }
 }

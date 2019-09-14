@@ -14,6 +14,7 @@ class ArticlesViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("ArticlesVC did load")
 
         tableView.delegate = self
 
@@ -43,14 +44,22 @@ class ArticlesViewController: UITableViewController {
         self.navigationController?.present(alertView, animated: true)
     }
 
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard tableView.numberOfRows(inSection: section) > 0 else { return nil }
+
+        let view = UITableViewHeaderFooterView()
+        view.textLabel?.text = viewModel.headerTitle(forSection: section)
+        return view
+    }
+
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return viewModel.sectionsInTableView()
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.numberOfRows
+        return viewModel.rowsInSection(section)
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -66,15 +75,4 @@ class ArticlesViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         viewModel.didSelectRowAt(indexPath)
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

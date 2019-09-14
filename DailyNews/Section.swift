@@ -22,12 +22,12 @@ class SectionsResult: Object, Decodable {
     @objc dynamic var copyright = ""
     @objc dynamic var status = ""
     @objc dynamic var numResults = 0
-    let results = List<Section>()
+    let sections = List<Section>()
 
     enum CodingKeys: String, CodingKey {
         case copyright, status
         case numResults = "num_results"
-        case results
+        case sections = "results"
     }
 
     required convenience init(from decoder: Decoder) throws {
@@ -36,7 +36,7 @@ class SectionsResult: Object, Decodable {
         copyright = try container.decode(String.self, forKey: .copyright)
         status = try container.decode(String.self, forKey: .status)
         numResults = try container.decode(Int.self, forKey: .numResults)
-        let sectionArray = try container.decode([Section].self, forKey: .results)
-        results.append(objectsIn: sectionArray)
+        let sectionArray = try container.decode([Section].self, forKey: .sections)
+        sections.append(objectsIn: sectionArray)
     }
 }

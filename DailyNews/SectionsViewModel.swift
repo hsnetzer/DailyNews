@@ -9,15 +9,15 @@
 import RealmSwift
 
 class SectionsViewModel {
-    private var sections = SectionsResult()
+    private var sectionsResult = SectionsResult()
 
     var numberOfRows: Int {
-        return sections.results.count
+        return sectionsResult.sections.count
     }
 
     func getSections(completion: @escaping (String, Bool) -> Void) {
         if let sections = sectionsFromRealm() {
-            self.sections = sections
+            self.sectionsResult = sections
             completion("Got Sections from Realm", true)
             return
         }
@@ -42,13 +42,13 @@ class SectionsViewModel {
                 completion(message, false)
                 return
             }
-            
-            if let admin = sections.results.first(where: { $0.section == "admin" }) {
+
+            if let admin = sections.sections.first(where: { $0.section == "admin" }) {
                 admin.displayName = "All"
                 admin.section = "all"
             }
 
-            self.sections = sections
+            self.sectionsResult = sections
 
             if let realm = try? Realm() {
                 try! realm.write {
@@ -61,28 +61,29 @@ class SectionsViewModel {
     }
 
     func section(at indexPath: IndexPath) -> Section? {
-        guard sections.results.indices.contains(indexPath.row) else { return nil }
-        return sections.results[indexPath.row]
+        guard sectionsResult.sections.indices.contains(indexPath.row) else { return nil }
+        return sectionsResult.sections[indexPath.row]
     }
 
     func configure(cell: SectionCell, forRow indexPath: IndexPath) {
-        cell.displayName.text = sections.results[indexPath.row].displayName
+        cell.displayName.text = sectionsResult.sections[indexPath.row].displayName
     }
 
     func moveRow(fromIndexPath: IndexPath, toIndexPath: IndexPath) {
         if let realm = try? Realm() {
             try! realm.write {
-                sections.results.swapAt(fromIndexPath.row, toIndexPath.row)
+                sectionsResult.sections.swapAt(fromIndexPath.row, toIndexPath.row)
             }
         }
     }
 
     func deleteRow(atIndexPath: IndexPath) {
         if let realm = try? Realm() {
+            let sec = sectionsResult.sections[atIndexPath.row]
+            let articles = realm.objects(Article.self).filter("section == %@", sec.displayName)
             try! realm.write {
-                let sec = sections.results[atIndexPath.row]
-                sections.results.remove(at: atIndexPath.row)
                 realm.delete(sec)
+                realm.delete(articles)
             }
         }
     }

@@ -50,7 +50,6 @@ struct NetworkingClient {
 
         AF.request(url)
             .responseDecodable(decoder: decoder) { (response: DataResponse<ArticlesResult>) in
-                
                 if let res = try? response.result.get() {
                     if res.status == "OK" {
                         completion(res, "OK")
