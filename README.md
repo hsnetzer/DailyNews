@@ -4,7 +4,7 @@ DailyNews fetches articles from the New York Times API. To reduce the urge to ch
 
 ## Caveats
 
-- When you exceed the API's rate limit, fetching articles fails silently in the current implementation.
+- When you exceed the API's rate limit, fetching articles fails without a very descriptive message.
 
 ## Hypothetical TODO
 
