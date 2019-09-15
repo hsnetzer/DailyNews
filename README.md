@@ -12,3 +12,4 @@ DailyNews fetches articles from the New York Times API. To combat incessant news
 - Implement a way to reset the section list.
 - Save articles and prevent them being deleted after 7 days.
 - Create a richer UI for the articles list. 
+- Make sure image isn't set after a cell has been reused.
