@@ -23,7 +23,8 @@ class ArticlesViewModel {
         today = calendar.date(from: components)!
     }
 
-    /// This function gets articles from Realm if there are any from today's paper. Otherwise, it checks the web for new articles.
+    /// This function gets articles from Realm if there are any from today's
+    /// paper. Otherwise, it checks the web for new articles.
     ///
     /// - Parameters:
     ///     - completion: A completion block, marked as escaping because API requests are asynchronous.
@@ -182,7 +183,8 @@ class ArticlesViewModel {
         }
     }
 
-    /// This function adds articles to self.articles, which is an array of 7 arrays of articles representing today and the last 6 days.
+    /// This function adds articles to self.articles, which is an array of 7 arrays of articles
+    /// representing today and the last 6 days.
     ///
     /// - Parameter articles: An array of articles.
     ///
@@ -210,7 +212,6 @@ class ArticlesViewModel {
             case 6*timeIntervalOfADay..<5*timeIntervalOfADay:
                 self.articles[6].append(article)
             default:
-                print("Skipping old article")
                 oldArticles.append(article)
             }
         }
@@ -221,7 +222,7 @@ class ArticlesViewModel {
     // MARK: Helpers
 
     private func deleteArticlesFromRealm(_ articles: [Article]) {
-        let realm = try! Realm()
+        guard let realm = try? Realm() else { return }
         try! realm.write {
             realm.delete(articles)
         }
@@ -238,10 +239,11 @@ class ArticlesViewModel {
         return nil
     }
 
-    private func firstIndexInSorted<T>(_ collection: Array<T>, test: (T) -> Bool) -> Int? {
+    private func firstIndexInSorted<T>(_ collection: [T], test: (T) -> Bool) -> Int? {
         for ind in 0..<collection.count {
             let element = collection[ind]
             if test(element) {
+                print("Found article we already have at index \(ind)")
                 return ind
             }
         }

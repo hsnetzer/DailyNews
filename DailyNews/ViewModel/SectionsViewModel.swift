@@ -36,7 +36,11 @@ class SectionsViewModel {
             }
 
             // Remove sections that are deprecated or don't play nice
-            let badSections = ["admin", "crosswords & games", "home & garden", "corrections", "podcasts", "guides", "home page", "job market", "lens", "automobiles", "education", "multimedia/photos", "times insider", "universal", "video"]
+            let badSections = ["admin", "crosswords & games", "home & garden",
+                               "corrections", "podcasts", "guides", "home page",
+                               "job market", "lens", "automobiles", "education",
+                               "multimedia/photos", "times insider",
+                               "universal", "video", "en español"]
             sections.sections = self.removeFrom(list: sections.sections, these: badSections)
 
             self.sectionsResult = sections
@@ -63,7 +67,8 @@ class SectionsViewModel {
 
     // MARK: - Public methods
 
-    /// This function gets the sections from Realm if they've already been cached there. Otherwise, it checks the web for the sections.
+    /// This function gets the sections from Realm if they've already been cached
+    /// there. Otherwise, it checks the web for the sections.
     ///
     /// - Parameters:
     ///     - completion: A completion block, marked escaping because API requests are asynchronous.
@@ -106,26 +111,29 @@ class SectionsViewModel {
     ///     - fromIndexPath: The old IndexPath of the SectionCell being moved.
     ///     - toIndexPath: The new IndexPath of the SectionCell being moved.
     func moveRow(fromIndexPath: IndexPath, toIndexPath: IndexPath) {
-        if let realm = try? Realm() {
-            try! realm.write {
-                let section = sectionsResult.sections[fromIndexPath.row]
-                sectionsResult.sections.remove(at: fromIndexPath.row)
-                sectionsResult.sections.insert(section, at: toIndexPath.row)
-            }
+        guard let realm = try? Realm() else { return }
+
+        try! realm.write {
+            let section = sectionsResult.sections[fromIndexPath.row]
+            sectionsResult.sections.remove(at: fromIndexPath.row)
+            sectionsResult.sections.insert(section, at: toIndexPath.row)
         }
     }
 
-    /// This function responds to the user deleting a row from the SectionsVC. The Section is deleted from Realm along with any Articles in that section. Because the sectionsResult property of this class is a "live" Realm Object, it automatically updates its collection of Sections in response to the deletion.
+    /// This function responds to the user deleting a row from the SectionsVC. The Section is deleted
+    /// from Realm along with any Articles in that section. Because the sectionsResult property of
+    /// this class is a "live" Realm Object, it automatically updates its collection of Sections in
+    /// response to the deletion.
     ///
     /// - Parameter atIndexPath: The IndexPath of the SectionCell being deleted.
     func deleteRow(atIndexPath: IndexPath) {
-        if let realm = try? Realm() {
-            let sec = sectionsResult.sections[atIndexPath.row]
-            let articles = realm.objects(Article.self).filter("section == %@", sec.displayName)
-            try! realm.write {
-                realm.delete(sec)
-                realm.delete(articles)
-            }
+        guard let realm = try? Realm() else { return }
+
+        let sec = sectionsResult.sections[atIndexPath.row]
+        let articles = realm.objects(Article.self).filter("section == %@", sec.displayName)
+        try! realm.write {
+            realm.delete(sec)
+            realm.delete(articles)
         }
     }
 }
