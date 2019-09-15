@@ -38,6 +38,7 @@ struct NetworkingClient {
         url += sec
             .replacingOccurrences(of: "&", with: "%26")
             .replacingOccurrences(of: "/", with: "%2F")
+            .replacingOccurrences(of: ".", with: "%2E")
         url += urlSuffix
         if offset >= 20 && offset <= 500 && offset % 20 == 0 {
             print("got offset")

@@ -23,10 +23,10 @@ class ArticlesViewModel {
         today = calendar.date(from: components)!
     }
 
-    /// This function gets articles from Realm if we have one from today. Otherwise, check web for new articles
+    /// This function gets articles from Realm if there are any from today's paper. Otherwise, it checks the web for new articles.
     ///
     /// - Parameters:
-    ///     - completion: A completion block.
+    ///     - completion: A completion block, marked as escaping because API requests are asynchronous.
     ///     - message: A message returned from the server.
     ///     - success: A boolean value representing that the articles were fetched successfuly.
     func getArticles(completion: @escaping (_ message: String, _ success: Bool) -> Void) {
@@ -36,13 +36,14 @@ class ArticlesViewModel {
 
             // Check if we already have any articles from today
             if self.articles.first!.count > 0 {
-
+                print("Found articles from Realm")
                 // We have an article from today from realm
                 completion("Got Articles from Realm", true)
                 return
             }
         }
 
+        // No articles from today in Realm, check API
         getNewArticlesFromAPI(completion: completion)
     }
 
@@ -65,7 +66,10 @@ class ArticlesViewModel {
     func didSelectRowAt(_ indexPath: IndexPath) {
         guard let index = sectionToIndex(indexPath.section) else { return }
         guard let url = URL(string: articles[index][indexPath.row].url) else { return }
+        print(url)
         guard UIApplication.shared.canOpenURL(url) else { return }
+
+        UIApplication.shared.open(url, options: [:])
     }
 
     /// This function returns the day of the week of a section of the tableview.
@@ -127,11 +131,8 @@ class ArticlesViewModel {
     private func articlesFromRealm() -> [Article]? {
         guard let realm = try? Realm() else { return nil }
 
-        var articles = realm.objects(Article.self)
-        print(articles.count)
-        if section.section != "all" {
-            articles = articles.filter("section == %@", section.displayName)
-        }
+        let articles = realm.objects(Article.self).filter("section == %@", section.displayName)
+        print("Found \(articles.count) articles")
 
         guard articles.count > 0 else { return nil }
 
@@ -154,32 +155,34 @@ class ArticlesViewModel {
                 return
             }
 
+            // Sort articles descending by publishedDate
+            self.addArticles(articles.sorted { $0.publishedDate > $1.publishedDate })
+            completion("Got Articles from Web", true)
+
+            // There could more more articles from today
             if self.calendar.isDate(oldest, inSameDayAs: self.today) {
-                self.addArticles(articles)
-                completion("Got some of the Articles", true)
                 self.getNewArticlesFromAPI(offset: offset + 20, completion: completion)
-            } else {
-                let todayArticles = articles.filter {
-                    self.calendar.isDate($0.publishedDate, inSameDayAs: self.today)
-                }
-                self.addArticles(todayArticles)
-                completion("Got all Articles from Web", true)
             }
         }
     }
 
-    // This function adds an array of articles to Realm and the articles property.
+    // This function adds an array of articles from the API to Realm and self.articles.
     private func addArticles(_ articles: [Article]) {
-        _ = sortByDay(articles: articles)
+        var filtered = articles
+        if let index = firstIndexInSorted(articles, test: isInRealm(_:)) {
+            filtered = Array(articles[0..<index])
+        }
+
+        _ = sortByDay(articles: filtered)
 
         if let realm = try? Realm() {
             try! realm.write {
-                realm.add(articles)
+                realm.add(filtered)
             }
         }
     }
 
-    /// This function adds articles to the viewmodel's articles property.
+    /// This function adds articles to self.articles, which is an array of 7 arrays of articles representing today and the last 6 days.
     ///
     /// - Parameter articles: An array of articles.
     ///
@@ -233,5 +236,20 @@ class ArticlesViewModel {
             if thisSection == section { return index }
         }
         return nil
+    }
+
+    private func firstIndexInSorted<T>(_ collection: Array<T>, test: (T) -> Bool) -> Int? {
+        for ind in 0..<collection.count {
+            let element = collection[ind]
+            if test(element) {
+                return ind
+            }
+        }
+        return nil
+    }
+
+    private func isInRealm(_ article: Article) -> Bool {
+        guard let realm = try? Realm() else { return false }
+        return realm.objects(Article.self).filter("url == %@", article.url).first != nil
     }
 }

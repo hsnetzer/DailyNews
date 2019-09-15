@@ -22,7 +22,7 @@ class SectionsResult: Object, Decodable {
     @objc dynamic var copyright = ""
     @objc dynamic var status = ""
     @objc dynamic var numResults = 0
-    let sections = List<Section>()
+    var sections = List<Section>()
 
     enum CodingKeys: String, CodingKey {
         case copyright, status
