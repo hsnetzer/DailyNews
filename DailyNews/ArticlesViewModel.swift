@@ -63,11 +63,9 @@ class ArticlesViewModel {
     ///
     /// - Parameter indexPath: The `IndexPath` of article that was tapped.
     func didSelectRowAt(_ indexPath: IndexPath) {
-        guard let index = sectionToIndex(indexPath.row) else { return }
+        guard let index = sectionToIndex(indexPath.section) else { return }
         guard let url = URL(string: articles[index][indexPath.row].url) else { return }
         guard UIApplication.shared.canOpenURL(url) else { return }
-
-        UIApplication.shared.open(url, options: [:])
     }
 
     /// This function returns the day of the week of a section of the tableview.

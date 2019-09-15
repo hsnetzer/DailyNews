@@ -21,7 +21,6 @@ import RealmSwift
     dynamic var createdDate = Date()
     dynamic var publishedDate = Date()
     dynamic var firstPublishedDate = Date()
-    dynamic var dayOfTheWeek = -1
     dynamic var materialTypeFacet = ""
     dynamic var kicker = ""
     dynamic var subheadline = ""

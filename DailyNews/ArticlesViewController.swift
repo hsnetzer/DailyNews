@@ -74,5 +74,6 @@ class ArticlesViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         viewModel.didSelectRowAt(indexPath)
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
