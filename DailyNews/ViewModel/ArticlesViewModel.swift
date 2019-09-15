@@ -7,6 +7,7 @@
 //
 
 import RealmSwift
+import Kingfisher
 
 class ArticlesViewModel {
     var section: Section!
@@ -58,7 +59,9 @@ class ArticlesViewModel {
     func configure(cell: ArticleCell, forRow indexPath: IndexPath) {
         guard let index = sectionToIndex(indexPath.section) else { return }
 
-        cell.headline.text = articles[index][indexPath.row].title
+        let article = articles[index][indexPath.row]
+        cell.headline.text = article.title
+        cell.thumb.kf.setImage(with: URL(string: article.thumbnailStandard))
     }
 
     /// This function opens the url of the article that was tapped in the tableview.
@@ -86,7 +89,7 @@ class ArticlesViewModel {
             return "Yesterday"
         case 2:
             let day = calendar.component(.weekday, from: today.addingTimeInterval(-2.0 * 24 * 60 * 60))
-            return calendar.weekdaySymbols[day-1]
+            return calendar.standaloneWeekdaySymbols[day-1]
         case 3:
             let day = calendar.component(.weekday, from: today.addingTimeInterval(-3.0 * 24 * 60 * 60))
             return calendar.weekdaySymbols[day-1]

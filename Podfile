@@ -9,6 +9,7 @@ target 'DailyNews' do
 pod 'RealmSwift'
 pod 'Alamofire', '~> 5.0.0-beta.5'
 pod 'SwiftLint'
+pod 'Kingfisher'
 
   target 'DailyNewsTests' do
     inherit! :search_paths

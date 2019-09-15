@@ -10,4 +10,5 @@ import UIKit
 
 class ArticleCell: UITableViewCell {
     @IBOutlet var headline: UILabel!
+    @IBOutlet var thumb: UIImageView!
 }
