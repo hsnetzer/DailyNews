@@ -12,12 +12,13 @@ import Kingfisher
 class ArticlesViewModel {
     var section: Section!
     private var calendar = Calendar(identifier: .gregorian)
-    private let today: Date
+    private let today: Date // Start/midnight of the current day in New York.
     private var articles = Array(repeating: [Article](), count: 7)
 
     // MARK: - Public methods
 
     init() {
+        // Set calendar to New York timezone
         calendar.timeZone = TimeZone(abbreviation: "EST")!
         // Day, month, year right now in New York
         let components = calendar.dateComponents([.day, .month, .year], from: Date())
@@ -89,7 +90,7 @@ class ArticlesViewModel {
             return "Yesterday"
         case 2:
             let day = calendar.component(.weekday, from: today.addingTimeInterval(-2.0 * 24 * 60 * 60))
-            return calendar.standaloneWeekdaySymbols[day-1]
+            return calendar.weekdaySymbols[day-1]
         case 3:
             let day = calendar.component(.weekday, from: today.addingTimeInterval(-3.0 * 24 * 60 * 60))
             return calendar.weekdaySymbols[day-1]
@@ -107,7 +108,9 @@ class ArticlesViewModel {
         }
     }
 
-    /// This function returns number of sections in the tableview.
+    /// This function returns number of sections in the tableview. Because some days might have no articles,
+    /// there could be fewer than 7 sections. This function counts the nonempty arrays making up the days of
+    /// the last week.
     ///
     /// - Returns: The number of sections that should be displayed.
     func sectionsInTableView() -> Int {
@@ -242,6 +245,8 @@ class ArticlesViewModel {
         return nil
     }
 
+    /// Given a collection that is already partitioned by test (see Array.partition), returns
+    /// the first index where test is true.
     private func firstIndexInSorted<T>(_ collection: [T], test: (T) -> Bool) -> Int? {
         for ind in 0..<collection.count {
             let element = collection[ind]
