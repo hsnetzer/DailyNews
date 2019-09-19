@@ -37,11 +37,11 @@ class ArticlesViewModel {
             let oldArticles = sortByDay(articles: articles)
             deleteArticlesFromRealm(oldArticles)
 
+            completion("Got Articles from Realm", true)
+
             // Check if we already have any articles from today
             if self.articles.first!.count > 0 {
-                print("Found articles from Realm")
-                // We have an article from today from realm
-                completion("Got Articles from Realm", true)
+                // We have an article from today in Realm
                 return
             }
         }
