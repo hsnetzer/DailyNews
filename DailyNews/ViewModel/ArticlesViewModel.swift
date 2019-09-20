@@ -15,7 +15,7 @@ class ArticlesViewModel {
     private let today: Date // Start/midnight of the current day in New York.
     private var articles = Array(repeating: [Article](), count: 7)
 
-    // MARK: - Public methods
+    // MARK: - Public functions
 
     init() {
         // Set calendar to New York timezone
@@ -83,7 +83,8 @@ class ArticlesViewModel {
     ///
     /// - Returns: The name of the day of the week representing that section.
     func headerTitle(forSection: Int) -> String {
-        switch forSection {
+        guard let arrayIndex = sectionToIndex(forSection) else { return "Error" }
+        switch arrayIndex {
         case 0:
             return "Today"
         case 1:
@@ -108,9 +109,9 @@ class ArticlesViewModel {
         }
     }
 
-    /// This function returns number of sections in the tableview. Because some days might have no articles,
-    /// there could be fewer than 7 sections. This function counts the nonempty arrays making up the days of
-    /// the last week.
+    /// This function returns number of sections in the tableview. Because some days might have no
+    /// articles, there could be fewer than 7 sections. This function counts the nonempty arrays making
+    /// up the days of the last week.
     ///
     /// - Returns: The number of sections that should be displayed.
     func sectionsInTableView() -> Int {
@@ -131,7 +132,7 @@ class ArticlesViewModel {
         return 0
     }
 
-    // MARK: - Private methods
+    // MARK: - Private functions
 
     // MARK: Populating articles
 
